@@ -1,15 +1,20 @@
 {
   "name": "ZeroDay",
   "short_name": "ZeroDay",
-  "start_url": ".",
+  "description": "A minimal daily routine tracker.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0b0f1a",
   "theme_color": "#0b0f1a",
   "icons": [
     {
       "src": "icon.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
