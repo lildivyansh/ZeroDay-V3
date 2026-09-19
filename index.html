@@ -2,69 +2,209 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ZeroDay</title>
 
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.png">
   <meta name="theme-color" content="#0b0f1a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ZeroDay">
 </head>
 
 <body>
 
 <div class="app">
 
-  <div class="header">
-    <div>
+  <header class="header">
+    <div class="header-text">
       <h1>ZeroDay</h1>
       <span id="date"></span>
     </div>
-    <button id="addBtn">+</button>
-  </div>
+    <button type="button" id="settingsBtn" class="icon-btn" aria-label="Notification settings">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 7h9M17 7h3M4 17h3M11 17h9"/>
+        <circle cx="15" cy="7" r="2"/>
+        <circle cx="9" cy="17" r="2"/>
+      </svg>
+    </button>
+  </header>
 
-  <div class="progress-wrapper">
-    <svg viewBox="0 0 120 120">
-      <circle cx="60" cy="60" r="54" class="bg-circle"/>
-      <circle cx="60" cy="60" r="54" class="progress-circle" id="circle"/>
-    </svg>
-    <span id="progressText">0%</span>
-  </div>
+  <main>
 
-  <div id="list"></div>
+    <!-- ACTIVITY TAB -->
+    <section id="activityView" class="view active" aria-label="Activities">
+
+      <div class="progress-wrapper" id="progressWrapper" role="img" aria-label="Progress">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle cx="60" cy="60" r="54" class="track"/>
+          <circle cx="60" cy="60" r="54" class="ring ring-activity" id="activityRing"/>
+          <circle cx="60" cy="60" r="40" class="track"/>
+          <circle cx="60" cy="60" r="40" class="ring ring-todo" id="todoRing"/>
+        </svg>
+        <span id="progressText">0%</span>
+      </div>
+
+      <div class="legend">
+        <span class="legend-item"><i class="dot dot-activity"></i><span id="legendActivity">Activities 0/0</span></span>
+        <span class="legend-item"><i class="dot dot-todo"></i><span id="legendTodo">To-Dos 0/0</span></span>
+      </div>
+
+      <!-- Priority To-Dos (collapsed by default) -->
+      <section id="priorityPanel" class="prio-panel hidden">
+        <button type="button" id="priorityToggle" class="prio-toggle" aria-expanded="false" aria-controls="priorityBody">
+          <span class="prio-title">Priority To-Dos</span>
+          <span id="priorityCount" class="prio-count"></span>
+          <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div id="priorityBody" class="prio-body">
+          <div class="prio-inner">
+            <div id="priorityList"></div>
+          </div>
+        </div>
+      </section>
+
+      <div id="activityHead" class="list-head hidden">
+        <span>Activities</span>
+        <button type="button" id="reorderBtn" class="text-btn">Reorder</button>
+      </div>
+
+      <div id="activityList" class="list"></div>
+
+    </section>
+
+    <!-- TODO TAB -->
+    <section id="todoView" class="view" aria-label="To-Dos">
+
+      <div class="section-head">
+        <h2>To Do</h2>
+        <span id="todoCount"></span>
+      </div>
+
+      <div id="todoList" class="list"></div>
+
+    </section>
+
+  </main>
 
 </div>
 
-<!-- MODAL -->
-<div id="modal" class="modal">
+<!-- FLOATING ADD BUTTONS: Activity (left, purple) / To-Do (right, yellow) -->
+<div class="fab-row">
+  <button type="button" id="addActivityBtn" class="fab fab-activity" aria-label="Add Activity">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+  <button type="button" id="addTodoBtn" class="fab fab-todo" aria-label="Add To-Do">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+</div>
+
+<!-- BOTTOM TABS -->
+<nav class="tabbar" aria-label="Sections">
+  <div class="tabbar-inner" role="tablist">
+    <button type="button" id="tabActivity" class="tab active" role="tab" aria-selected="true" aria-controls="activityView">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>
+      <span>Activity</span>
+    </button>
+    <button type="button" id="tabTodo" class="tab" role="tab" aria-selected="false" aria-controls="todoView">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7.5l1.6 1.6L9.5 6M5 15.5l1.6 1.6 2.9-3.1M13 8h6M13 16h6"/></svg>
+      <span>Todo</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ADD / EDIT ACTIVITY MODAL -->
+<div id="activityModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="activityModalTitle" aria-hidden="true">
   <div class="modal-content">
 
     <div class="modal-header">
-      <h3>Add Activity</h3>
-      <button id="closeModal">×</button>
+      <h3 id="activityModalTitle">Add Activity</h3>
+      <button type="button" class="modal-close" data-close aria-label="Close">×</button>
     </div>
 
-    <input id="taskInput" placeholder="Activity name"/>
+    <input id="activityInput" class="field" placeholder="Activity name" aria-label="Activity name" maxlength="60" autocomplete="off" enterkeyhint="done">
 
-    <select id="type">
+    <select id="type" class="field" aria-label="Schedule">
       <option value="daily">Daily</option>
       <option value="alternate">Alternate Days</option>
       <option value="specific">Specific Days</option>
     </select>
 
     <div id="days" class="days hidden">
-      <label><input type="checkbox" value="0">Sun</label>
-      <label><input type="checkbox" value="1">Mon</label>
-      <label><input type="checkbox" value="2">Tue</label>
-      <label><input type="checkbox" value="3">Wed</label>
-      <label><input type="checkbox" value="4">Thu</label>
-      <label><input type="checkbox" value="5">Fri</label>
-      <label><input type="checkbox" value="6">Sat</label>
+      <label class="day"><input type="checkbox" value="0"><span>Sun</span></label>
+      <label class="day"><input type="checkbox" value="1"><span>Mon</span></label>
+      <label class="day"><input type="checkbox" value="2"><span>Tue</span></label>
+      <label class="day"><input type="checkbox" value="3"><span>Wed</span></label>
+      <label class="day"><input type="checkbox" value="4"><span>Thu</span></label>
+      <label class="day"><input type="checkbox" value="5"><span>Fri</span></label>
+      <label class="day"><input type="checkbox" value="6"><span>Sat</span></label>
     </div>
 
-    <button id="saveTask">Add</button>
+    <button type="button" id="saveActivity" class="primary primary-activity">Add</button>
+    <button type="button" id="deleteActivity" class="danger-link hidden">Delete</button>
 
   </div>
 </div>
+
+<!-- ADD / EDIT TODO MODAL -->
+<div id="todoModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="todoModalTitle" aria-hidden="true">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3 id="todoModalTitle">Add To-Do</h3>
+      <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+    </div>
+
+    <input id="todoInput" class="field" placeholder="To-Do" aria-label="To-Do" maxlength="80" autocomplete="off" enterkeyhint="done">
+
+    <!-- Star priority matrix: importance + urgency -->
+    <div id="matrix" class="matrix">
+      <div class="matrix-row">
+        <span>Importance</span>
+        <div class="stars" data-key="importance" role="group" aria-label="Importance">
+          <button type="button" data-v="1" aria-label="1 star"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.8l6-.8z"/></svg></button>
+          <button type="button" data-v="2" aria-label="2 stars"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.8l6-.8z"/></svg></button>
+          <button type="button" data-v="3" aria-label="3 stars"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.8l6-.8z"/></svg></button>
+        </div>
+      </div>
+      <div class="matrix-row">
+        <span>Urgency</span>
+        <div class="stars" data-key="urgency" role="group" aria-label="Urgency">
+          <button type="button" data-v="1" aria-label="1 star"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.8l6-.8z"/></svg></button>
+          <button type="button" data-v="2" aria-label="2 stars"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.8l6-.8z"/></svg></button>
+          <button type="button" data-v="3" aria-label="3 stars"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.8l6-.8z"/></svg></button>
+        </div>
+      </div>
+      <div class="matrix-result">
+        <i id="matrixDot" class="pdot low"></i>
+        <span id="matrixLabel">Low priority</span>
+      </div>
+    </div>
+
+    <button type="button" id="saveTodo" class="primary primary-todo">Add</button>
+    <button type="button" id="deleteTodo" class="danger-link hidden">Delete</button>
+
+  </div>
+</div>
+
+<!-- NOTIFICATION SETTINGS -->
+<div id="settingsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" aria-hidden="true">
+  <div class="modal-content sheet">
+
+    <div class="modal-header">
+      <h3 id="settingsTitle">Notifications</h3>
+      <button type="button" class="modal-close" data-close aria-label="Close">×</button>
+    </div>
+
+    <div id="settingsBody" class="settings-body"></div>
+
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script src="script.js"></script>
 </body>
