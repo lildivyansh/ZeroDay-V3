@@ -1,0 +1,15 @@
+{
+  "name": "ZeroDay",
+  "short_name": "ZeroDay",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0b0f1a",
+  "theme_color": "#0b0f1a",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeroDay</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0f1a">
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <div>
+      <h1>ZeroDay</h1>
+      <span id="date"></span>
+    </div>
+    <button id="addBtn">+</button>
+  </div>
+
+  <div class="progress-wrapper">
+    <svg viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="54" class="bg-circle"/>
+      <circle cx="60" cy="60" r="54" class="progress-circle" id="circle"/>
+    </svg>
+    <span id="progressText">0%</span>
+  </div>
+
+  <div id="list"></div>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h3>Add Activity</h3>
+      <button id="closeModal">×</button>
+    </div>
+
+    <input id="taskInput" placeholder="Activity name"/>
+
+    <select id="type">
+      <option value="daily">Daily</option>
+      <option value="alternate">Alternate Days</option>
+      <option value="specific">Specific Days</option>
+    </select>
+
+    <div id="days" class="days hidden">
+      <label><input type="checkbox" value="0">Sun</label>
+      <label><input type="checkbox" value="1">Mon</label>
+      <label><input type="checkbox" value="2">Tue</label>
+      <label><input type="checkbox" value="3">Wed</label>
+      <label><input type="checkbox" value="4">Thu</label>
+      <label><input type="checkbox" value="5">Fri</label>
+      <label><input type="checkbox" value="6">Sat</label>
+    </div>
+
+    <button id="saveTask">Add</button>
+
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
